@@ -99,19 +99,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Test API endpoint first
     if (window.DEBUG_MODE) {
-        console.log('Testing API endpoint...');
+        console.log('Testing API endpoints...');
+        
+        // Test basic API functionality
         try {
-            const response = await fetch('/api/quiz');
-            console.log('API Response status:', response.status);
-            console.log('API Response ok:', response.ok);
-            if (response.ok) {
-                const data = await response.json();
-                console.log('API Data received:', data.length, 'questions');
+            const testResponse = await fetch('/api/test');
+            console.log('Test API Response status:', testResponse.status);
+            if (testResponse.ok) {
+                const testData = await testResponse.json();
+                console.log('Test API working:', testData);
             } else {
-                console.error('API Error:', response.status, response.statusText);
+                console.error('Test API Error:', testResponse.status, testResponse.statusText);
             }
         } catch (error) {
-            console.error('API Test failed:', error);
+            console.error('Test API failed:', error);
+        }
+        
+        // Test quiz API
+        try {
+            const response = await fetch('/api/quiz');
+            console.log('Quiz API Response status:', response.status);
+            console.log('Quiz API Response ok:', response.ok);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Quiz API Data received:', data.length, 'questions');
+            } else {
+                console.error('Quiz API Error:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('Quiz API Test failed:', error);
         }
     }
     

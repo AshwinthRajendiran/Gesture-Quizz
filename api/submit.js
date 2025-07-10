@@ -24,7 +24,7 @@ export default function handler(req, res) {
       id: Date.now(),
       answers,
       score,
-      totalQuestions: 15, // Hardcoded for now
+      totalQuestions: 15,
       percentage: Math.round((score / 15) * 100),
       timestamp: new Date().toISOString()
     };
