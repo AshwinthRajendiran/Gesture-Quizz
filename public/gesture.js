@@ -20,6 +20,8 @@ class GestureDetector {
 
     async initialize() {
         try {
+            console.log('Loading MediaPipe Hands...');
+            
             // Initialize MediaPipe Hands
             this.hands = new Hands({
                 locateFile: (file) => {
@@ -27,6 +29,7 @@ class GestureDetector {
                 }
             });
 
+            console.log('Configuring hands detection...');
             this.hands.setOptions({
                 maxNumHands: 1,
                 modelComplexity: 1,
@@ -36,11 +39,18 @@ class GestureDetector {
 
             this.hands.onResults(this.onResults.bind(this));
 
+            console.log('Getting video element...');
+            const videoElement = document.getElementById('webcam');
+            if (!videoElement) {
+                throw new Error('Video element with id "webcam" not found');
+            }
+
+            console.log('Initializing camera...');
             // Initialize camera
-            this.camera = new Camera(document.getElementById('webcam'), {
+            this.camera = new Camera(videoElement, {
                 onFrame: async () => {
                     if (this.hands) {
-                        await this.hands.send({ image: document.getElementById('webcam') });
+                        await this.hands.send({ image: videoElement });
                     }
                 },
                 width: 400,
@@ -54,6 +64,7 @@ class GestureDetector {
             return true;
         } catch (error) {
             console.error('Failed to initialize gesture detector:', error);
+            console.error('Error details:', error.message);
             return false;
         }
     }

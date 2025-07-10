@@ -13,16 +13,20 @@ class HandGestureQuizApp {
         
         try {
             // Load quiz questions
+            console.log('Loading quiz questions...');
             const questionsLoaded = await this.quizManager.loadQuestions();
             if (!questionsLoaded) {
-                throw new Error('Failed to load quiz questions');
+                throw new Error('Failed to load quiz questions from API');
             }
+            console.log('Quiz questions loaded successfully');
             
             // Initialize gesture detector
+            console.log('Initializing gesture detector...');
             const gestureInitialized = await this.gestureDetector.initialize();
             if (!gestureInitialized) {
-                throw new Error('Failed to initialize gesture detector');
+                throw new Error('Failed to initialize gesture detector - check webcam permissions');
             }
+            console.log('Gesture detector initialized successfully');
             
             // Set up gesture callback
             this.gestureDetector.setGestureCallback((gesture) => {
@@ -40,7 +44,7 @@ class HandGestureQuizApp {
             
         } catch (error) {
             console.error('Failed to initialize app:', error);
-            this.showError('Failed to initialize the application. Please refresh the page and try again.');
+            this.showError(`Failed to initialize the application: ${error.message}. Please refresh the page and try again.`);
         }
     }
 
@@ -92,6 +96,24 @@ let app;
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM loaded, starting app...');
+    
+    // Test API endpoint first
+    if (window.DEBUG_MODE) {
+        console.log('Testing API endpoint...');
+        try {
+            const response = await fetch('/api/quiz');
+            console.log('API Response status:', response.status);
+            console.log('API Response ok:', response.ok);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('API Data received:', data.length, 'questions');
+            } else {
+                console.error('API Error:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('API Test failed:', error);
+        }
+    }
     
     // Check for webcam support
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {

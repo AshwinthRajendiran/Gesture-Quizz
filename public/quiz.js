@@ -28,13 +28,56 @@ class QuizManager {
 
     async loadQuestions() {
         try {
+            console.log('Fetching questions from /api/quiz...');
             const response = await fetch('/api/quiz');
+            
+            if (!response.ok) {
+                throw new Error(`API responded with status: ${response.status} ${response.statusText}`);
+            }
+            
             this.questions = await response.json();
-            console.log('Questions loaded:', this.questions.length);
+            console.log('Questions loaded successfully:', this.questions.length);
             return true;
         } catch (error) {
-            console.error('Failed to load questions:', error);
-            return false;
+            console.error('Failed to load questions from API:', error);
+            console.error('Error details:', error.message);
+            
+            // Fallback: Use hardcoded questions if API fails
+            console.log('Using fallback questions...');
+            this.questions = [
+                {
+                    id: 1,
+                    question: "Which of the following best describes a Demand-Side Platform (DSP)?",
+                    options: ["A platform that hosts display ads", "A tool for publishers to serve ads directly", "A platform for media buyers to purchase inventory in real time", "A CRM system used by advertisers"],
+                    correctAnswer: 2
+                },
+                {
+                    id: 2,
+                    question: "Which of the following platforms aggregates inventory and sells it in bulk to advertisers?",
+                    options: ["Ad Server", "Data Management Platform", "Ad Network", "DSP"],
+                    correctAnswer: 2
+                },
+                {
+                    id: 3,
+                    question: "What is the main advantage of using a DSP over an Ad Network?",
+                    options: ["DSPs are free while Ad Networks are not", "DSPs allow impression-by-impression bidding", "DSPs only work with direct publishers", "DSPs use only third-party data"],
+                    correctAnswer: 1
+                },
+                {
+                    id: 4,
+                    question: "Which entity enables the real-time buying and selling of ad inventory?",
+                    options: ["DMP", "Ad Server", "Ad Exchange", "CRM"],
+                    correctAnswer: 2
+                },
+                {
+                    id: 5,
+                    question: "In a second-price auction used in RTB, the winner pays:",
+                    options: ["Their full bid price", "The average of all bids", "The price of the second-highest bid plus $0.01", "The lowest bid submitted"],
+                    correctAnswer: 2
+                }
+            ];
+            console.log('Fallback questions loaded:', this.questions.length);
+            return true;
         }
     }
 
