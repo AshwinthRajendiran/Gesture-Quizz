@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Gesture Quiz</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248252/drawing_utils.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen active">
+            <div class="loading-content">
+                <h1>Hand Gesture Quiz</h1>
+                <div class="loading-spinner"></div>
+                <p>Loading hand detection model...</p>
+                <div class="gesture-instructions">
+                    <h3>How to use:</h3>
+                    <ul>
+                        <li>🖐️ 1-4 fingers: Select answer options</li>
+                        <li>✊ Closed hand (0 fingers): Next question</li>
+                        <li>🖐️ 5 fingers: Submit quiz</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <header>
+                <h1>Hand Gesture Quiz</h1>
+                <div class="quiz-info">
+                    <span id="question-counter">Question 1 of 15</span>
+                    <span id="timer">Time: 00:00</span>
+                </div>
+            </header>
+
+            <main class="quiz-content">
+                <div class="question-section">
+                    <h2 id="question-text">Loading question...</h2>
+                    <div class="options-container">
+                        <div class="option" data-index="0">
+                            <span class="option-number">1</span>
+                            <span class="option-text" id="option-0">Loading...</span>
+                        </div>
+                        <div class="option" data-index="1">
+                            <span class="option-number">2</span>
+                            <span class="option-text" id="option-1">Loading...</span>
+                        </div>
+                        <div class="option" data-index="2">
+                            <span class="option-number">3</span>
+                            <span class="option-text" id="option-2">Loading...</span>
+                        </div>
+                        <div class="option" data-index="3">
+                            <span class="option-number">4</span>
+                            <span class="option-text" id="option-3">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="webcam-section">
+                    <div class="webcam-container">
+                        <video id="webcam" autoplay muted></video>
+                        <canvas id="output-canvas"></canvas>
+                        <div class="gesture-feedback">
+                            <span id="gesture-text">Show your hand to the camera</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <div class="quiz-controls">
+                <button id="next-btn" class="btn btn-primary" disabled>
+                    Next Question ✊
+                </button>
+                <button id="submit-btn" class="btn btn-success" disabled>
+                    Submit Quiz 🖐️
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="results-content">
+                <h1>Quiz Results</h1>
+                <div class="score-display">
+                    <div class="score-circle">
+                        <span id="score-percentage">0%</span>
+                    </div>
+                    <p>You got <span id="score-text">0</span> out of <span id="total-questions">15</span> questions correct!</p>
+                    <p class="time-info">⏱️ Total time: <span id="total-time">00:00</span></p>
+                </div>
+                <div class="results-summary">
+                    <h3>Question Summary:</h3>
+                    <div id="answers-summary"></div>
+                </div>
+                <button id="restart-btn" class="btn btn-primary">Take Quiz Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="gesture.js"></script>
+    <script src="quiz.js"></script>
+    <script src="main.js"></script>
+</body>
+</html> 
