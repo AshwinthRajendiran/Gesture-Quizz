@@ -7,6 +7,7 @@ class GestureDetector {
         this.gestureDebounceTime = 1000; // 1 second debounce
         this.lastGestureTime = 0;
         this.onGestureCallback = null;
+        this.gestureEnabled = true; // Default to enabled
         
         // Hand landmark indices for finger detection
         this.fingerIndices = {
@@ -73,12 +74,17 @@ class GestureDetector {
             
             // Detect gesture
             const gesture = this.detectGesture(landmarks);
-            this.updateGestureFeedback(gesture);
             
-            // Handle gesture with debouncing
-            this.handleGesture(gesture);
+            // Only update feedback and handle gesture if enabled
+            if (this.gestureEnabled !== false) {
+                this.updateGestureFeedback(gesture);
+                this.handleGesture(gesture);
+            }
         } else {
-            this.updateGestureFeedback(null);
+            // Only update feedback if enabled
+            if (this.gestureEnabled !== false) {
+                this.updateGestureFeedback(null);
+            }
         }
     }
 
@@ -230,6 +236,10 @@ class GestureDetector {
 
     setGestureCallback(callback) {
         this.onGestureCallback = callback;
+    }
+
+    setGestureEnabled(enabled) {
+        this.gestureEnabled = enabled;
     }
 
     destroy() {

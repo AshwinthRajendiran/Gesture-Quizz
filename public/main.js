@@ -4,6 +4,9 @@ class HandGestureQuizApp {
         this.quizManager = new QuizManager();
         this.isInitialized = false;
         this.cameraAvailable = false;
+        
+        // Pass gesture detector reference to quiz manager
+        this.quizManager.gestureDetector = this.gestureDetector;
     }
 
     async initialize() {

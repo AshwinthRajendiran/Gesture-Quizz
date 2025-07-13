@@ -34,6 +34,13 @@
                             <li>🖐️ 5 fingers: Submit quiz (on last question)</li>
                         </ul>
                     </div>
+                    <div class="keyboard-instructions" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                        <h4>Alternative Controls:</h4>
+                        <ul>
+                            <li>Enter key: Start quiz / Restart quiz</li>
+                            <li>Click buttons: Start quiz / Submit quiz / Restart quiz</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="start-controls">
                     <button id="gesture-start-btn" class="btn btn-primary">
@@ -51,9 +58,14 @@
                     <h3>Keyboard Controls:</h3>
                     <div class="keyboard-instructions">
                         <ul>
-                            <li>Enter key: Start quiz / Next question / Submit quiz</li>
+                            <li>Enter key: Start quiz / Next question / Submit quiz / Restart quiz</li>
                             <li>↑↓ Arrow keys: Navigate through options</li>
-                            <li>R key: Restart quiz (on results screen)</li>
+                        </ul>
+                    </div>
+                    <div class="keyboard-instructions" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                        <h4>Alternative Controls:</h4>
+                        <ul>
+                            <li>Click buttons: Start quiz / Submit quiz / Restart quiz</li>
                         </ul>
                     </div>
                 </div>
@@ -133,6 +145,9 @@
                 <div class="results-summary">
                     <h3>Question Summary:</h3>
                     <div id="answers-summary"></div>
+                </div>
+                <div class="restart-instructions" id="restart-instructions">
+                    <p>Press <strong>Enter</strong> or show <strong>5 fingers</strong> to restart the quiz</p>
                 </div>
                 <button id="restart-btn" class="btn btn-primary">Take Quiz Again</button>
             </div>

@@ -247,10 +247,24 @@ class QuizManager {
         // Show answer summary
         this.displayAnswerSummary();
         
+        // Update restart instructions based on mode
+        this.updateRestartInstructions();
+        
         // Add restart button listener
         document.getElementById('restart-btn').addEventListener('click', () => {
             this.restartQuiz();
         });
+    }
+
+    updateRestartInstructions() {
+        const restartInstructions = document.getElementById('restart-instructions');
+        if (restartInstructions) {
+            if (this.cameraAvailable) {
+                restartInstructions.innerHTML = '<p>Press <strong>Enter</strong> or show <strong>5 fingers</strong> to restart the quiz</p>';
+            } else {
+                restartInstructions.innerHTML = '<p>Press <strong>Enter</strong> to restart the quiz</p>';
+            }
+        }
     }
 
     displayTotalTime() {
@@ -297,14 +311,30 @@ class QuizManager {
     }
 
     restartQuiz() {
+        // Reset quiz state
+        this.isQuizComplete = false;
+        this.isQuizStarted = false;
+        this.currentQuestionIndex = 0;
+        this.answers = [];
+        this.score = 0;
+        this.selectedOptionIndex = -1;
+        
+        // Stop any timers
+        this.stopTimer();
+        if (this.gestureDelayTimer) {
+            clearTimeout(this.gestureDelayTimer);
+            this.gestureDelayTimer = null;
+        }
+        
         // Hide results screen
         document.getElementById('results-screen').classList.remove('active');
         
-        // Show quiz screen
-        document.getElementById('quiz-screen').classList.add('active');
-        
-        // Restart quiz
-        this.startQuiz();
+        // Show appropriate rules screen based on camera availability
+        if (this.cameraAvailable) {
+            document.getElementById('gesture-rules-screen').classList.add('active');
+        } else {
+            document.getElementById('keyboard-rules-screen').classList.add('active');
+        }
     }
 
     startTimer() {
@@ -332,6 +362,11 @@ class QuizManager {
             clearTimeout(this.gestureDelayTimer);
         }
         
+        // Disable gesture detector feedback
+        if (this.gestureDetector) {
+            this.gestureDetector.setGestureEnabled(false);
+        }
+        
         // Hide detection messages during countdown
         this.updateGestureFeedback('countdown');
         
@@ -354,6 +389,11 @@ class QuizManager {
             clearInterval(countdownInterval);
             this.gestureEnabled = true;
             this.updateGestureFeedback('ready');
+            
+            // Re-enable gesture detector feedback
+            if (this.gestureDetector) {
+                this.gestureDetector.setGestureEnabled(true);
+            }
         }, this.gestureDelay);
     }
 
@@ -394,10 +434,17 @@ class QuizManager {
 
     bindKeyboardEvents() {
         document.addEventListener('keydown', (event) => {
+            // Handle restart quiz from results screen (both modes)
+            if (this.isQuizComplete && event.key === 'Enter') {
+                event.preventDefault();
+                this.restartQuiz();
+                return;
+            }
+            
             if (this.isQuizComplete) return;
             
             if (!this.isQuizStarted) {
-                // Handle start quiz from rules screens
+                // Handle start quiz from rules screens (both modes)
                 if (event.key === 'Enter') {
                     event.preventDefault();
                     this.startQuiz();
@@ -430,27 +477,11 @@ class QuizManager {
                         break;
                 }
             } else {
-                // Keyboard shortcuts for testing (only in development)
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    switch (event.key) {
-                        case '1':
-                        case '2':
-                        case '3':
-                        case '4':
-                            const optionIndex = parseInt(event.key) - 1;
-                            this.selectOption(optionIndex);
-                            break;
-                        case 'n':
-                            if (!this.nextBtn.disabled) {
-                                this.nextQuestion();
-                            }
-                            break;
-                        case 's':
-                            if (!this.submitBtn.disabled) {
-                                this.submitQuiz();
-                            }
-                            break;
-                    }
+                // In camera mode, Enter key only works for start/restart, not for quiz navigation
+                // (gestures handle the quiz navigation)
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    // Enter key in camera mode only works for start/restart, not during quiz
                 }
             }
         });
@@ -484,6 +515,15 @@ class QuizManager {
     }
 
     handleGesture(gesture) {
+        // Only handle gestures if camera is available
+        if (!this.cameraAvailable) return;
+        
+        // Handle restart quiz from results screen
+        if (this.isQuizComplete && gesture === '5') {
+            this.restartQuiz();
+            return;
+        }
+        
         if (this.isQuizComplete || !this.gestureEnabled) return;
         
         switch (gesture) {
