@@ -20,14 +20,63 @@
             <div class="loading-content">
                 <h1>Hand Gesture Quiz</h1>
                 <div class="loading-spinner"></div>
-                <p>Loading hand detection model...</p>
-                <div class="gesture-instructions">
-                    <h3>How to use:</h3>
-                    <ul>
-                        <li>🖐️ 1-4 fingers: Select answer options</li>
-                        <li>✊ Closed hand (0 fingers): Next question</li>
-                        <li>🖐️ 5 fingers: Submit quiz</li>
-                    </ul>
+                <p>Detecting camera support...</p>
+            </div>
+        </div>
+
+        <!-- Gesture Rules Screen -->
+        <div id="gesture-rules-screen" class="screen">
+            <div class="rules-content">
+                <h1>Hand Gesture Quiz</h1>
+                <div class="rules-instructions">
+                    <h3>Gesture Controls:</h3>
+                    <div class="gesture-instructions">
+                        <ul>
+                            <li>🖐️ 5 fingers: Start the quiz</li>
+                            <li>🖐️ 1-4 fingers: Select answer options</li>
+                            <li>✊ Closed hand (0 fingers): Next question</li>
+                            <li>🖐️ 5 fingers: Submit quiz (on last question)</li>
+                        </ul>
+                    </div>
+                    <div class="keyboard-instructions" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                        <h4>Alternative Controls:</h4>
+                        <ul>
+                            <li>Enter key: Start quiz / Restart quiz</li>
+                            <li>Click buttons: Start quiz / Submit quiz / Restart quiz</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="start-controls">
+                    <button id="gesture-start-btn" class="btn btn-primary">
+                        Start Quiz 🖐️
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyboard Rules Screen -->
+        <div id="keyboard-rules-screen" class="screen">
+            <div class="rules-content">
+                <h1>Hand Gesture Quiz</h1>
+                <div class="rules-instructions">
+                    <h3>Keyboard Controls:</h3>
+                    <div class="keyboard-instructions">
+                        <ul>
+                            <li>Enter key: Start quiz / Next question / Submit quiz / Restart quiz</li>
+                            <li>↑↓ Arrow keys: Navigate through options</li>
+                        </ul>
+                    </div>
+                    <div class="keyboard-instructions" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                        <h4>Alternative Controls:</h4>
+                        <ul>
+                            <li>Click buttons: Start quiz / Submit quiz / Restart quiz</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="start-controls">
+                    <button id="keyboard-start-btn" class="btn btn-primary">
+                        Start Quiz ⌨️
+                    </button>
                 </div>
             </div>
         </div>
@@ -65,7 +114,7 @@
                     </div>
                 </div>
 
-                <div class="webcam-section">
+                <div class="webcam-section" id="webcam-section">
                     <div class="webcam-container">
                         <video id="webcam" autoplay muted></video>
                         <canvas id="output-canvas"></canvas>
@@ -100,6 +149,9 @@
                 <div class="results-summary">
                     <h3>Question Summary:</h3>
                     <div id="answers-summary"></div>
+                </div>
+                <div class="restart-instructions" id="restart-instructions">
+                    <p>Press <strong>Enter</strong> or show <strong>5 fingers</strong> to restart the quiz</p>
                 </div>
                 <button id="restart-btn" class="btn btn-primary">Take Quiz Again</button>
             </div>
