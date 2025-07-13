@@ -34,7 +34,7 @@ const quizData = [
     id: 4,
     question: "Which entity enables the real-time buying and selling of ad inventory?",
     options: ["Ad Exchange", "DMP", "CRM", "Ad Server"],
-    correctAnswer: 1
+    correctAnswer: 0
   },
   {
     id: 5,
