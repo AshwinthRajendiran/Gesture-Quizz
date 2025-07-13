@@ -3,6 +3,7 @@ class HandGestureQuizApp {
         this.gestureDetector = new GestureDetector();
         this.quizManager = new QuizManager();
         this.isInitialized = false;
+        this.cameraAvailable = false;
     }
 
     async initialize() {
@@ -18,24 +19,40 @@ class HandGestureQuizApp {
                 throw new Error('Failed to load quiz questions');
             }
             
-            // Initialize gesture detector
-            const gestureInitialized = await this.gestureDetector.initialize();
-            if (!gestureInitialized) {
-                throw new Error('Failed to initialize gesture detector');
-            }
+            // Check camera availability
+            this.cameraAvailable = await this.checkCameraAvailability();
             
-            // Set up gesture callback
-            this.gestureDetector.setGestureCallback((gesture) => {
-                this.handleGesture(gesture);
-            });
+            // Set camera availability in quiz manager
+            this.quizManager.cameraAvailable = this.cameraAvailable;
+            
+            if (this.cameraAvailable) {
+                // Initialize gesture detector
+                const gestureInitialized = await this.gestureDetector.initialize();
+                if (!gestureInitialized) {
+                    console.warn('Gesture detector failed, continuing with keyboard/mouse controls');
+                    this.cameraAvailable = false;
+                    this.quizManager.cameraAvailable = false;
+                } else {
+                    // Set up gesture callback
+                    this.gestureDetector.setGestureCallback((gesture) => {
+                        this.handleGesture(gesture);
+                    });
+                }
+            }
             
             this.isInitialized = true;
             console.log('App initialized successfully');
             
-            // Hide loading screen and show quiz
+            // Setup event listeners
+            this.setupEventListeners();
+            
+            // Hide loading screen and show appropriate rules screen
             setTimeout(() => {
-                this.showScreen('quiz-screen');
-                this.quizManager.startQuiz();
+                if (this.cameraAvailable) {
+                    this.showScreen('gesture-rules-screen');
+                } else {
+                    this.showScreen('keyboard-rules-screen');
+                }
             }, 1000);
             
         } catch (error) {
@@ -44,11 +61,65 @@ class HandGestureQuizApp {
         }
     }
 
+    async checkCameraAvailability() {
+        try {
+            // Check if getUserMedia is supported
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.warn('getUserMedia not supported');
+                return false;
+            }
+            
+            // Try to get camera access
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            
+            // Stop the stream immediately as we just wanted to test access
+            stream.getTracks().forEach(track => track.stop());
+            
+            console.log('Camera access granted');
+            return true;
+            
+        } catch (error) {
+            console.warn('Camera access failed:', error.name);
+            
+            if (error.name === 'NotAllowedError') {
+                this.quizManager.updateGestureFeedback('camera-denied');
+            } else {
+                this.quizManager.updateGestureFeedback('no-camera');
+            }
+            
+            return false;
+        }
+    }
+
     handleGesture(gesture) {
         if (!this.isInitialized) return;
         
         console.log('Gesture detected:', gesture);
         this.quizManager.handleGesture(gesture);
+        
+        // Handle start quiz gesture
+        if (gesture === '5' && !this.quizManager.isQuizStarted) {
+            this.startQuiz();
+        }
+    }
+
+    startQuiz() {
+        this.showScreen('quiz-screen');
+        this.quizManager.startQuiz();
+    }
+
+    // Listen for start quiz event from keyboard
+    setupEventListeners() {
+        document.addEventListener('startQuiz', () => {
+            this.startQuiz();
+        });
+        
+        // Listen for start quiz from both gesture and keyboard rules screens
+        document.addEventListener('click', (event) => {
+            if (event.target.id === 'gesture-start-btn' || event.target.id === 'keyboard-start-btn') {
+                this.startQuiz();
+            }
+        });
     }
 
     showScreen(screenId) {
@@ -92,20 +163,6 @@ let app;
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM loaded, starting app...');
-    
-    // Check for webcam support
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Webcam access is not supported in your browser. Please use a modern browser with webcam support.');
-        return;
-    }
-    
-    // Request webcam permission early
-    try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-    } catch (error) {
-        alert('Please allow webcam access to use the hand gesture quiz.');
-        return;
-    }
     
     // Initialize the app
     app = new HandGestureQuizApp();
